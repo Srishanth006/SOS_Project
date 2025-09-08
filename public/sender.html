@@ -6,81 +6,129 @@
     <title>Suraksha Jhumka - SOS</title>
     <!-- Firebase SDKs are loaded in the body -->
     <style>
-        /* --- General Styling & Animated Background --- */
-        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #f9fafb; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; overflow: hidden; }
-        .animated-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(270deg, #0f172a, #1d1f4d, #4c1d4a, #0f172a); background-size: 400% 400%; animation: moveGradient 20s ease infinite; }
-        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .container { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(10px); border-radius: 24px; padding: 2.5rem 2rem; width: 90%; max-width: 440px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); border: 1px solid rgba(55, 65, 81, 0.7); display: flex; flex-direction: column; align-items: center; animation: fadeInUp 0.8s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        h1 { margin: 0 0 0.5rem; font-size: 1.8rem; color: #e5e7eb; }
-        p { margin: 0 0 2rem; color: #9ca3af; line-height: 1.5; max-width: 320px; }
+        /* --- General Styling --- */
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: #333; /* Dark grey text */
+            background: #ffffff; /* Pure white background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: #f8f9fa; /* Very light grey card background */
+            border: 1px solid #dee2e6;
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { margin: 0 0 0.5rem; font-size: 1.8rem; color: #222; }
+        p { margin: 0 0 2rem; color: #555; line-height: 1.5; max-width: 320px; }
         
-        /* --- Redesigned Jhumka SOS Button --- */
-        .jhumka-container { position: relative; cursor: pointer; width: 180px; height: 280px; margin-bottom: 2rem; transition: transform 0.2s ease-out; }
+        /* --- MONOCHROME Jhumka Styling --- */
+        .jhumka-container {
+            position: relative;
+            cursor: pointer;
+            width: 180px;
+            height: 280px;
+            margin-bottom: 2rem;
+            transition: transform 0.2s ease-out;
+        }
+        
         .jhumka-container.is-clicked { animation: jiggle 0.5s ease-out; }
         @keyframes jiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
         
         .jhumka-svg { width: 100%; height: 100%; }
-        .jhumka-gold { fill: url(#gold-gradient); stroke: #ca8a04; stroke-width: 1.5; }
-        .jhumka-pearl { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; }
         
-        /* Panic Button is now a group of elements */
+        .jhumka-metal {
+            fill: #adb5bd; /* Main grey color */
+            stroke: #495057; /* Darker grey outline */
+            stroke-width: 1.5;
+        }
+        .jhumka-pearl {
+            fill: #f8f9fa; /* Off-white */
+            stroke: #adb5bd; /* Grey outline */
+            stroke-width: 1;
+        }
+        .jhumka-engraving {
+             stroke: #495057;
+             stroke-width: 1;
+        }
+        
+        /* Panic Button is the stud group */
         .panic-stud { transition: all 0.3s; }
-        .jhumka-container:hover .panic-stud { filter: drop-shadow(0 0 12px #ef4444); cursor: pointer; }
+        .jhumka-container:hover .panic-stud {
+             filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.8));
+             cursor: pointer;
+        }
         
         .jhumka-container.active { animation: breathing-glow 2.5s ease-in-out infinite; }
-        @keyframes breathing-glow { 0%, 100% { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4)); transform: scale(1); } 50% { filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8)); transform: scale(1.02); } }
+        @keyframes breathing-glow {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8)); transform: scale(1.02); }
+        }
+        /* When active, the center of the stud turns red */
+        .jhumka-container.active .panic-stud-center {
+            fill: #dc2626;
+        }
         
         /* --- Status and Control Styling --- */
-        .stop-button { background: none; border: 1px solid #4b5563; color: #9ca3af; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: none; }
-        .stop-button:hover { background-color: #374151; }
-        .status { margin-top: -1rem; min-height: 1.2rem; font-weight: 500; font-size: 1rem; }
-        .status.ok { color: #22c55e; } .status.err { color: #f87171; }
+        .stop-button {
+            background: #f8f9fa; border: 1px solid #dee2e6; color: #495057;
+            padding: 0.5rem 1rem; border-radius: 50px; cursor: pointer; display: none;
+            transition: all 0.2s ease-out;
+        }
+        .stop-button:hover { background-color: #ffffff; border-color: #adb5bd; color: #000; }
+
+        .status { margin-top: -1rem; min-height: 1.2rem; font-weight: 500; font-size: 1rem; color: #555; }
+        .status.ok { color: #198754; } /* Bootstrap success green */
+        .status.err { color: #dc3545; } /* Bootstrap danger red */
     </style>
 </head>
 <body>
-    <div class="animated-background"></div>
     <div class="container">
         <h1>Suraksha Jhumka</h1>
         <p>This simulates the wearable earring. Click the intricate stud to activate the SOS.</p>
 
-        <!-- The AUTHENTIC Jhumka SVG -->
+        <!-- The MONOCHROME Jhumka SVG -->
         <div id="jhumkaButton" class="jhumka-container">
             <svg class="jhumka-svg" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#fde047;" />
-                        <stop offset="100%" style="stop-color:#ca8a04;" />
-                    </linearGradient>
-                </defs>
-
                 <!-- Jhumka Dome (Bell) -->
-                <path class="jhumka-gold" d="M15 65 C 15 100, 85 100, 85 65 A 35 35 0 0 1 15 65 Z" />
-                
+                <path class="jhumka-metal" d="M15 65 C 15 100, 85 100, 85 65 A 35 35 0 0 1 15 65 Z" />
                 <!-- Connecting Bridge -->
-                <path class="jhumka-gold" d="M30 38 C 20 50, 20 60, 16 65 L 84 65 C 80 60, 80 50, 70 38 Z" fill="url(#gold-gradient)"/>
-
+                <path class="jhumka-metal" d="M30 38 C 20 50, 20 60, 16 65 L 84 65 C 80 60, 80 50, 70 38 Z" />
                 <!-- Connector Loop -->
-                <path class="jhumka-gold" d="M45 58 A 5 5 0 0 1 55 58 L 53 58 A 3 3 0 0 0 47 58 Z" fill="url(#gold-gradient)" />
+                <path class="jhumka-metal" d="M45 58 A 5 5 0 0 1 55 58 L 53 58 A 3 3 0 0 0 47 58 Z" />
 
                 <!-- Mandala Stud (Panic Button) -->
                 <g class="panic-stud">
-                    <circle class="jhumka-gold" cx="50" cy="35" r="22"/>
-                    <path d="M50 18 L50 52 M30 25 L70 45 M30 45 L70 25" stroke="#422006" stroke-width="1"/>
-                    <circle cx="50" cy="35" r="5" fill="#422006"/>
+                    <circle class="jhumka-metal" cx="50" cy="35" r="22"/>
+                    <path class="jhumka-engraving" d="M50 18 L50 52 M30 25 L70 45 M30 45 L70 25"/>
+                    <circle class="panic-stud-center" cx="50" cy="35" r="5" fill="#495057"/>
                 </g>
 
                 <!-- Dangling Pearls -->
                 <g class="jhumka-pearls">
-                    <line x1="25" y1="98" x2="25" y2="105" stroke="#ca8a04"/>
+                    <line x1="25" y1="98" x2="25" y2="105" stroke="#adb5bd"/>
                     <circle class="jhumka-pearl" cx="25" cy="110" r="5"/>
-                    <line x1="40" y1="100" x2="40" y2="107" stroke="#ca8a04"/>
+                    <line x1="40" y1="100" x2="40" y2="107" stroke="#adb5bd"/>
                     <circle class="jhumka-pearl" cx="40" cy="112" r="5"/>
-                    <line x1="50" y1="100" x2="50" y2="107" stroke="#ca8a04"/>
+                    <line x1="50" y1="100" x2="50" y2="107" stroke="#adb5bd"/>
                     <circle class="jhumka-pearl" cx="50" cy="112" r="5"/>
-                    <line x1="60" y1="100" x2="60" y2="107" stroke="#ca8a04"/>
+                    <line x1="60" y1="100" x2="60" y2="107" stroke="#adb5bd"/>
                     <circle class="jhumka-pearl" cx="60" cy="112" r="5"/>
-                    <line x1="75" y1="98" x2="75" y2="105" stroke="#ca8a04"/>
+                    <line x1="75" y1="98" x2="75" y2="105" stroke="#adb5bd"/>
                     <circle class="jhumka-pearl" cx="75" cy="110" r="5"/>
                 </g>
             </svg>
@@ -94,7 +142,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
-        // JavaScript logic is unchanged and will work perfectly with the new SVG.
+        // JavaScript logic is unchanged and will work perfectly.
         const FIREBASE_CONFIG = { apiKey: "AIzaSyDJG7XujjzGVGrdiDzYjPgdw34mFw6mkIA", authDomain: "alert-system-a99ab.firebaseapp.com", databaseURL: "https://alert-system-a99ab-default-rtdb.firebaseio.com", projectId: "alert-system-a99ab", storageBucket: "alert-system-a99ab.firebasestorage.app", messagingSenderId: "301074962948", appId: "1:301074962948:web:a32821f6312145e1627351", measurementId: "G-0C5EPXJGED" };
         const app = firebase.initializeApp(FIREBASE_CONFIG);
         const db = firebase.database();

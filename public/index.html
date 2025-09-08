@@ -5,104 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Suraksha Jhumka - Inclusive Safety for All</title>
     <style>
-        /* CSS is unchanged and correct */
-        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #f9fafb; background: #111827; line-height: 1.6; }
-        .animated-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(270deg, #0f172a, #1d1f4d, #4c1d4a, #0f172a); background-size: 400% 400%; animation: moveGradient 20s ease infinite; }
-        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 90vh; padding: 2rem; }
-        .project-details { padding: 3rem 2rem; background: rgba(17, 24, 39, 0.5); backdrop-filter: blur(10px); border-top: 1px solid #374151; }
-        .container { max-width: 800px; margin: 0 auto; }
-        h1 { font-size: 3rem; margin-bottom: 1rem; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
-        .tagline { font-size: 1.25rem; color: #d1d5db; max-width: 600px; margin-bottom: 2.5rem; }
-        .cta-button { display: inline-block; background: #3b82f6; color: #fff; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-size: 1.1rem; font-weight: 600; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }
-        .cta-button:hover { transform: translateY(-3px); background-color: #2563eb; }
-        .project-details h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
-        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
-        .dropdown-container { margin-bottom: 12px; }
-        .dropdown-button { width: 100%; background: #1f2937; color: #e5e7eb; padding: 1rem; border: 1px solid #374151; border-radius: 12px; cursor: pointer; text-align: left; font-size: 1.1rem; font-weight: 500; transition: background-color 0.2s; }
-        .dropdown-button:hover { background-color: #374151; }
-        .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #111827; border-radius: 0 0 12px 12px; border: 1px solid #374151; border-top: none; padding: 0 1rem; }
-        .dropdown-content.show { max-height: 400px; padding: 1rem; } /* This class is toggled by JS */
-        .dropdown-content p { margin: 0 0 1rem; color: #9ca3af; }
-        .dropdown-content strong { color: #d1d5db; }
-        .dropdown-content a { color: #3b82f6; text-decoration: none; }
-        .dropdown-content a:hover { text-decoration: underline; }
-        .dropdown-content ul { list-style-type: '✓  '; padding-left: 1.5rem; }
-        .dropdown-content li { margin-bottom: 0.5rem; }
+        /* --- NEW: Minimalist Light Theme --- */
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: #333; /* Dark grey text for readability */
+            background: #ffffff; /* Pure white background */
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        /* --- Hero Section Layout --- */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #222; /* Near-black for the main title */
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            color: #555; /* Medium grey for the subtitle */
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+        
+        /* --- MODIFIED: Button Styling --- */
+        .cta-button {
+            display: inline-block;
+            background: #e9ecef; /* Light grey background */
+            color: #333; /* Dark text */
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease-out;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.1);
+        }
+        .cta-button:hover {
+            background: #ffffff; /* Becomes white on hover */
+            color: #000; /* Text becomes black */
+            transform: translateY(-3px);
+            border-color: #dee2e6; /* Adds a subtle border */
+            box-shadow: 0 8px 15px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .details-buttons { margin-top: 3.5rem; display: flex; gap: 1.5rem; }
+        .detail-button {
+            background: #313233; /* Very light grey */
+            border: 1px solid #dee2e6;
+            color: #f8fbfd;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease-out;
+        }
+        .detail-button:hover {
+            background-color: #ffffff; /* Becomes white on hover */
+            color: #000; /* Text becomes black */
+            border-color: #adb5bd;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- MODIFIED: Modal (Popup) Styling --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s;
+            z-index: 100;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        
+        .modal-content {
+            background: #ffffff; /* White modal background */
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 500px;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
+        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
+
+        .modal-content h2 { margin-top: 0; font-size: 1.5rem; color: #222; }
+        .modal-content p { margin: 0 0 1rem; color: #555; }
+        .modal-content strong { color: #333; }
+        .modal-content a { color: #007bff; /* Standard blue link color */ text-decoration: none; font-weight: 500; }
+        .modal-content a:hover { text-decoration: underline; }
+        .modal-content ul { list-style-type: '✓  '; padding-left: 1.5rem; margin: 0; text-align: left; color: #555; }
+        .modal-content li { margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
 
-    <div class="animated-background"></div>
-
-    <!-- Hero Section: The main message -->
+    <!-- Hero Section -->
     <section class="hero">
-        <h1>Suraksha Jhumka</h1>
+        <h1>S.A.F.E</h1>
+        <h2>
+          The future of women Safety
+        </h2>
         <p class="tagline">
-            Building a safer, more inclusive world with technology that empowers everyone. Our mission is to ensure no one is left behind due to disability, language, or lack of resources.
+            Building a safer, more inclusive world with technology that empowers everyone. Our mission is to ensure no one is left behind.
         </p>
         <a href="/sender.html" class="cta-button">Launch the Jhumka Demo</a>
-    </section>
 
-    <!-- Project Details Section -->
-    <section class="project-details">
-        <div class="container">
-            <h2>About the Prototype</h2>
-            <div class="dropdown-grid">
-                
-                <div class="dropdown-container">
-                    <button class="dropdown-button">Circuit Diagram</button>
-                    <div class="dropdown-content">
-                        <p>The core of our device is a custom-designed circuit built for reliability and low power consumption.</p>
-                        <!-- ACTION: Replace '#' with your Google Drive link when ready -->
-                        <a href="#" target="_blank">View Circuit Diagram (Drive Link)</a>
-                    </div>
-                </div>
-
-                <div class="dropdown-container">
-                    <button class="dropdown-button">Materials Required</button>
-                    <div class="dropdown-content">
-                        <ul>
-                            <li>ESP32 Microcontroller</li>
-                            <li>GPS Module (NEO-6M)</li>
-                            <li>Push Button (Tactile Switch)</li>
-                            <li>LiPo Battery & Charger Module</li>
-                            <li>3D Printed/Custom Jhumka Casing</li>
-                            <li>Connecting Wires</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="dropdown-container">
-                    <button class="dropdown-button">Estimated Budget</button>
-                    <div class="dropdown-content">
-                        <p>Our prototype was developed with affordability in mind to ensure accessibility.</p>
-                        <p><strong>Total Estimated Cost:</strong> Approximately ₹1500 - ₹2000 per unit.</p>
-                    </div>
-                </div>
-
-            </div>
+        <!-- Detail Buttons -->
+        <div class="details-buttons">
+            <button class="detail-button" data-modal="modal-circuit">Circuit Diagram</button>
+            <button class="detail-button" data-modal="modal-materials">Materials Required</button>
+            <button class="detail-button" data-modal="modal-budget">Estimated Budget</button>
         </div>
     </section>
 
-    <!-- NEW: SCRIPT FOR DROPDOWN FUNCTIONALITY -->
+    <!-- Modal Popups (Hidden by default) -->
+    <div id="modal-circuit" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Circuit Diagram</h2>
+            <p>The core of our device is a custom-designed circuit built for reliability and low power consumption.</p>
+            <a href="#" target="_blank">View Circuit Diagram (Drive Link)</a>
+        </div>
+    </div>
+    <div id="modal-materials" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Materials Required</h2>
+            <ul>
+                <li>ESP32 Microcontroller</li>
+                <li>GPS Module (NEO-6M)</li>
+                <li>Push Button (Tactile Switch)</li>
+                <li>LiPo Battery & Charger Module</li>
+                <li>3D Printed/Custom Jhumka Casing</li>
+                <li>Connecting Wires</li>
+            </ul>
+        </div>
+    </div>
+    <div id="modal-budget" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Estimated Budget</h2>
+            <p>Our prototype was developed with affordability in mind to ensure accessibility.</p>
+            <p><strong>Total Estimated Cost:</strong> Approximately ₹1500 - ₹2000 per unit.</p>
+        </div>
+    </div>
+
     <script>
+        // JavaScript for the modal functionality (unchanged)
         document.addEventListener('DOMContentLoaded', () => {
-            const dropdownButtons = document.querySelectorAll('.dropdown-button');
-
-            dropdownButtons.forEach(button => {
+            const detailButtons = document.querySelectorAll('.detail-button');
+            const modalOverlays = document.querySelectorAll('.modal-overlay');
+            detailButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    const content = button.nextElementSibling;
-                    const isAlreadyOpen = content.classList.contains('show');
-
-                    // Close all other dropdowns first
-                    dropdownButtons.forEach(otherButton => {
-                        otherButton.nextElementSibling.classList.remove('show');
-                    });
-
-                    // If the clicked dropdown was not already open, open it
-                    if (!isAlreadyOpen) {
-                        content.classList.add('show');
+                    const modalId = button.getAttribute('data-modal');
+                    document.getElementById(modalId).classList.add('show');
+                });
+            });
+            modalOverlays.forEach(overlay => {
+                overlay.addEventListener('click', (event) => {
+                    if (event.target === overlay) {
+                        overlay.classList.remove('show');
                     }
                 });
             });
