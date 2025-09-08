@@ -1,56 +1,193 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Women's Rights in India</title>
+    <title>Women's Rights in India - S.A.F.E.</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
             color: #333;
         }
+        
         header {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #ffffff;
+            color: #212529;
             text-align: center;
-            padding: 20px;
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .content {
-            padding: 20px;
-            text-align: center;
+        
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
         }
-        iframe {
-            width: 80%;
-            height: 600px;
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* --- NEW: Language Tab Navigation --- */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-button {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
             border: none;
-            margin-top: 20px;
+            background-color: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #6c757d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease-in-out;
         }
-        footer {
-            background-color: #4CAF50;
-            color: white;
+        
+        .tab-button:hover {
+            background-color: #e9ecef;
+            color: #000;
+        }
+        
+        .tab-button.active {
+            color: #212529;
+            border-bottom: 3px solid #FFC300; /* Bee-Yellow active indicator */
+        }
+        
+        /* --- Content Panes --- */
+        .content-pane {
+            display: none; /* Hide all panes by default */
+        }
+        
+        .content-pane.active {
+            display: block; /* Show only the active one */
+        }
+
+        .content {
+            padding: 1rem;
             text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 12px;
+        }
+        
+        iframe {
             width: 100%;
+            height: 60vh; /* Responsive height */
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .download-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            background-color: #e9ecef;
+            color: #333;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease-out;
+        }
+        .download-link:hover {
+            background-color: #FFC300;
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: #ffffff;
+            color: #6c757d;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+            margin-top: 3rem;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Top 15 Must-Know Women's Rights in India</h1>
+        <h1>Know Your Rights in India</h1>
     </header>
-    <div class="content">
-        <p>Explore the comprehensive presentation covering women's rights in multiple Indian languages.</p>
-        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://file-examples-com.github.io/uploads/2017/10/file-example_PPT_500kB.pptx" allowfullscreen></iframe>
-        <p><a href="Women_Rights_India.pptx" download>Download the Presentation</a></p>
-    </div>
+    
+    <main>
+        <!-- Language Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" data-lang="en">English</button>
+            <button class="tab-button" data-lang="ta">தமிழ் (Tamil)</button>
+            <button class="tab-button" data-lang="hi">हिन्दी (Hindi)</button>
+            <!-- Add more language buttons here if needed -->
+        </div>
+
+        <!-- Content Panes -->
+        <div class="content-panes">
+            
+            <!-- English Content -->
+            <div id="en" class="content-pane active">
+                <div class="content">
+                    <p>Explore the comprehensive presentation covering women's rights.</p>
+                    <!-- ACTION: Replace this placeholder link with your actual English PPT -->
+                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://file-examples-com.github.io/uploads/2017/10/file-example_PPT_500kB.pptx" allowfullscreen></iframe>
+                    <a href="#" class="download-link" download>Download Presentation (English)</a>
+                </div>
+            </div>
+
+            <!-- Tamil Content -->
+            <div id="ta" class="content-pane">
+                <div class="content">
+                    <p>பெண்களின் உரிமைகள் குறித்த விரிவான விளக்கக்காட்சியை ஆராயுங்கள்.</p>
+                    <!-- ACTION: Replace this placeholder link with your actual Tamil PPT -->
+                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://file-examples-com.github.io/uploads/2017/10/file-example_PPT_500kB.pptx" allowfullscreen></iframe>
+                    <a href="#" class="download-link" download>பதிவிறக்கம் (தமிழ்)</a>
+                </div>
+            </div>
+
+            <!-- Hindi Content -->
+            <div id="hi" class="content-pane">
+                 <div class="content">
+                    <p>महिलाओं के अधिकारों को कवर करने वाली व्यापक प्रस्तुति का अन्वेषण करें।</p>
+                    <!-- ACTION: Replace this placeholder link with your actual Hindi PPT -->
+                    <iframe src="https://view.officeapps.live.com/op/embed.aspx?src=https://file-examples-com.github.io/uploads/2017/10/file-example_PPT_500kB.pptx" allowfullscreen></iframe>
+                    <a href="#" class="download-link" download>डाउनलोड (हिन्दी)</a>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+    
     <footer>
-        &copy; 2025 Women's Rights Info
+        &copy; 2025 S.A.F.E. Project
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const contentPanes = document.querySelectorAll('.content-pane');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and panes
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    contentPanes.forEach(pane => pane.classList.remove('active'));
+
+                    // Add active class to the clicked button
+                    button.classList.add('active');
+
+                    // Show the corresponding content pane
+                    const lang = button.getAttribute('data-lang');
+                    document.getElementById(lang).classList.add('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
