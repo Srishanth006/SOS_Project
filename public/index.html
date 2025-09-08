@@ -5,134 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Suraksha Jhumka - Inclusive Safety for All</title>
     <style>
-        /* --- General Styling & Animated Background --- */
-        body {
-            margin: 0;
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-            color: #f9fafb;
-            background: #111827; /* Fallback background */
-            line-height: 1.6;
-        }
-
-        .animated-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: linear-gradient(270deg, #0f172a, #1d1f4d, #4c1d4a, #0f172a);
-            background-size: 400% 400%;
-            animation: moveGradient 20s ease infinite;
-        }
-
-        @keyframes moveGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* --- Layout Containers --- */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            min-height: 90vh;
-            padding: 2rem;
-        }
-        
-        .project-details {
-            padding: 3rem 2rem;
-            background: rgba(17, 24, 39, 0.5);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #374151;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* --- Hero Section Elements --- */
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #fff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.1);
-        }
-        
-        .tagline {
-            font-size: 1.25rem;
-            color: #d1d5db;
-            max-width: 600px;
-            margin-bottom: 2.5rem;
-        }
-        
-        .cta-button {
-            display: inline-block;
-            background: #3b82f6; /* A bright, hopeful blue */
-            color: #fff;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3);
-        }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            background-color: #2563eb;
-        }
-
-        /* --- Project Details & Dropdowns --- */
-        .project-details h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .dropdown-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
+        /* CSS is unchanged and correct */
+        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #f9fafb; background: #111827; line-height: 1.6; }
+        .animated-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(270deg, #0f172a, #1d1f4d, #4c1d4a, #0f172a); background-size: 400% 400%; animation: moveGradient 20s ease infinite; }
+        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 90vh; padding: 2rem; }
+        .project-details { padding: 3rem 2rem; background: rgba(17, 24, 39, 0.5); backdrop-filter: blur(10px); border-top: 1px solid #374151; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 3rem; margin-bottom: 1rem; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
+        .tagline { font-size: 1.25rem; color: #d1d5db; max-width: 600px; margin-bottom: 2.5rem; }
+        .cta-button { display: inline-block; background: #3b82f6; color: #fff; padding: 1rem 2.5rem; border-radius: 50px; text-decoration: none; font-size: 1.1rem; font-weight: 600; transition: transform 0.2s, background-color 0.2s; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3); }
+        .cta-button:hover { transform: translateY(-3px); background-color: #2563eb; }
+        .project-details h2 { text-align: center; font-size: 2rem; margin-bottom: 2rem; }
+        .dropdown-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
         .dropdown-container { margin-bottom: 12px; }
-        .dropdown-button {
-            width: 100%;
-            background: #1f2937;
-            color: #e5e7eb;
-            padding: 1rem;
-            border: 1px solid #374151;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 1.1rem;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
+        .dropdown-button { width: 100%; background: #1f2937; color: #e5e7eb; padding: 1rem; border: 1px solid #374151; border-radius: 12px; cursor: pointer; text-align: left; font-size: 1.1rem; font-weight: 500; transition: background-color 0.2s; }
         .dropdown-button:hover { background-color: #374151; }
-        .dropdown-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
-            background: #111827;
-            border-radius: 0 0 12px 12px;
-            border: 1px solid #374151;
-            border-top: none;
-            padding: 0 1rem;
-        }
-        .dropdown-content.show { max-height: 400px; padding: 1rem; }
+        .dropdown-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #111827; border-radius: 0 0 12px 12px; border: 1px solid #374151; border-top: none; padding: 0 1rem; }
+        .dropdown-content.show { max-height: 400px; padding: 1rem; } /* This class is toggled by JS */
         .dropdown-content p { margin: 0 0 1rem; color: #9ca3af; }
         .dropdown-content strong { color: #d1d5db; }
         .dropdown-content a { color: #3b82f6; text-decoration: none; }
         .dropdown-content a:hover { text-decoration: underline; }
         .dropdown-content ul { list-style-type: '✓  '; padding-left: 1.5rem; }
         .dropdown-content li { margin-bottom: 0.5rem; }
-
     </style>
 </head>
 <body>
@@ -189,21 +85,25 @@
         </div>
     </section>
 
+    <!-- NEW: SCRIPT FOR DROPDOWN FUNCTIONALITY -->
     <script>
-        // JavaScript for the dropdown functionality
         document.addEventListener('DOMContentLoaded', () => {
             const dropdownButtons = document.querySelectorAll('.dropdown-button');
+
             dropdownButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    // Close other open dropdowns
-                    dropdownButtons.forEach(otherButton => {
-                        if (otherButton !== button) {
-                            otherButton.nextElementSibling.classList.remove('show');
-                        }
-                    });
-                    // Toggle the clicked one
                     const content = button.nextElementSibling;
-                    content.classList.toggle('show');
+                    const isAlreadyOpen = content.classList.contains('show');
+
+                    // Close all other dropdowns first
+                    dropdownButtons.forEach(otherButton => {
+                        otherButton.nextElementSibling.classList.remove('show');
+                    });
+
+                    // If the clicked dropdown was not already open, open it
+                    if (!isAlreadyOpen) {
+                        content.classList.add('show');
+                    }
                 });
             });
         });
