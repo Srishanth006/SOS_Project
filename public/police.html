@@ -1,115 +1,178 @@
-:root {
-  --bg: #0f172a;
-  --panel: #121a34;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --brand: #3b82f6;
-  --brand-600: #2563eb;
-  --danger: #ef4444;
-  --success: #22c55e;
-  --border: #233053;
-  --border-strong: #2d3a5e;
-  --border-accent: rgba(59, 130, 246, 0.35);
-  --border-glow: 0 0 0 1px rgba(59, 130, 246, 0.12), 0 8px 28px rgba(0, 0, 0, 0.28);
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tamil Nadu Police Dashboard — SOS Alerts</title>
+    <link rel="stylesheet" href="/style.css" />
+    <!-- Leaflet Maps Library CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+</head>
+<body>
+    <header class="app-header">
+        <h1>Police Dashboard</h1>
+        <div class="alert-banner" id="alertBanner" style="display:none;">
+            <span class="badge" id="alertCount">0</span>
+            ACTIVE SOS ALERT
+        </div>
+    </header>
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  background: linear-gradient(180deg, #0b1227, var(--bg));
-  color: var(--text);
-}
+    <main class="dashboard">
+        <section class="panel left">
+            <div id="map"></div>
+        </section>
+        <section class="panel right">
+            <div class="panel-header">
+                <h2>Incoming Reports</h2>
+                <button id="clearButton" class="btn">Clear All</button>
+            </div>
+            <div class="list" id="reportList"></div>
+        </section>
+    </main>
 
-.app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border-strong);
-  background: rgba(3, 8, 23, 0.6);
-  backdrop-filter: blur(8px);
-}
-.app-header.danger { border-bottom-color: rgba(239, 68, 68, 0.3); }
-.app-header h1 { margin: 0; font-size: 20px; }
-.app-header p { margin: 0; color: var(--muted); }
+    <!-- Sound for new alerts -->
+    <audio id="alertSound" preload="auto">
+        <source src="https://www.zapsplat.com/wp-content/uploads/2015/sound-effects-the-sound-pack-tree/tspt_siren_short_burst_01.mp3" type="audio/mpeg" />
+    </audio>
 
-.container { max-width: 960px; margin: 24px auto; padding: 0 16px; }
-.card {
-  background: linear-gradient(180deg, #0f1936, #0c1731);
-  border: 1px solid var(--border-strong);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255,255,255,0.02);
-}
-.card:hover { box-shadow: var(--border-glow); border-color: var(--border-accent); }
-.card h2, .card h3 { margin-top: 0; }
+    <!-- Leaflet Maps Library JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <script>
+        // --- Your Firebase Configuration has been integrated ---
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyDJG7XujjzGVGrdiDzYjPgdw34mFw6mkIA",
+            authDomain: "alert-system-a99ab.firebaseapp.com",
+            databaseURL: "https://alert-system-a99ab-default-rtdb.firebaseio.com",
+            projectId: "alert-system-a99ab",
+            storageBucket: "alert-system-a99ab.firebasestorage.app",
+            messagingSenderId: "301074962948",
+            appId: "1:301074962948:web:a32821f6312145e1627351",
+            measurementId: "G-0C5EPXJGED"
+        };
+        // --------------------------------------------------------------------
 
-.btn {
-  appearance: none;
-  border: 1px solid var(--border-strong);
-  background: #0b1530;
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.btn:hover { background: #0a142e; border-color: var(--brand-600); box-shadow: 0 0 0 2px rgba(37,99,235,0.15); }
-.btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--brand); border-color: var(--brand-600); }
-.btn-primary:hover { background: var(--brand-600); }
-.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(59,130,246,0.22), 0 0 0 1px var(--brand-600) inset; }
+        // Initialize Firebase
+        const app = firebase.initializeApp(FIREBASE_CONFIG);
+        const db = firebase.database();
+        const reportsRef = db.ref('sos_reports');
 
-/* Emphasize the destructive nature of the demo clear action */
-#clearButton {
-  background: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.45);
-  color: #fecaca;
-}
-#clearButton:hover {
-  background: rgba(239, 68, 68, 0.16);
-  border-color: #ef4444;
-  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.20);
-}
-#clearButton:focus-visible {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.22), 0 0 0 1px #ef4444 inset;
-}
-#clearButton:active {
-  transform: translateY(1px) scale(0.99);
-}
+        // UI Elements
+        const reportList = document.getElementById('reportList');
+        const alertBanner = document.getElementById('alertBanner');
+        const alertCount = document.getElementById('alertCount');
+        const clearButton = document.getElementById('clearButton');
+        const alertSound = document.getElementById('alertSound');
+        
+        // Map State
+        const map = L.map('map').setView([20.5937, 78.9629], 5); // Center on India
+        const markers = {}; // Object to store map markers by report ID
 
-.status { margin-top: 10px; color: var(--muted); }
-.status.ok { color: var(--success); }
-.status.err { color: var(--danger); }
+        // Add map tiles (the map background)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
 
-.map { width: 100%; height: 320px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02), 0 8px 26px rgba(0,0,0,0.28); }
-.map.full { height: calc(100vh - 120px); }
-.map:hover { border-color: var(--border-accent); box-shadow: var(--border-glow); }
+        // Function to play sound safely
+        function playSound() {
+            alertSound.play().catch(error => console.log("Audio play blocked by browser.", error));
+        }
 
-.muted { color: var(--muted); }
-.app-footer { text-align: center; padding: 24px; color: var(--muted); }
-.app-footer a { color: var(--brand); text-decoration: none; }
+        // Function to update the list of reports and the alert banner
+        function updateUI() {
+            const reportCount = Object.keys(markers).length;
+            alertCount.textContent = reportCount;
+            alertBanner.style.display = reportCount > 0 ? 'flex' : 'none';
+        }
 
-.dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; padding: 16px; }
-.panel { background: linear-gradient(180deg, #0f1936, #0c1731); border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02); }
-.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-.list { max-height: calc(100vh - 180px); overflow: auto; display: grid; gap: 8px; }
+        // --- Firebase Listeners ---
 
-.report-item { background: #0b1530; border: 1px solid var(--border-strong); padding: 10px; border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02); }
-.report-item:hover { border-color: var(--border-accent); box-shadow: var(--border-glow); }
-.report-item .meta { color: var(--muted); font-size: 12px; }
-.report-item .coords { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        // 1. Listen for new reports being added
+        reportsRef.on('child_added', (snapshot) => {
+            const reportId = snapshot.key;
+            const report = snapshot.val();
+            
+            console.log('New Report Received:', reportId, report);
+            playSound();
 
-.alert-banner { display: flex; align-items: center; gap: 10px; color: #fff; background: rgba(239, 68, 68, 0.22); padding: 8px 12px; border: 1px solid rgba(239,68,68,.45); border-radius: 8px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02); }
-.badge { background: var(--danger); color: #fff; border-radius: 999px; padding: 2px 8px; font-weight: 600; }
+            // Create HTML for the report list
+            const item = document.createElement('div');
+            item.className = 'report-item';
+            item.id = `item-${reportId}`;
+            item.innerHTML = `
+                <div class="coords">Lat: ${report.location.lat.toFixed(5)}, Lng: ${report.location.lng.toFixed(5)}</div>
+                <div class="meta">Received: ${new Date(report.createdAt).toLocaleString()}</div>
+                <div class="meta" id="updated-${reportId}"></div>
+            `;
+            // Add to the top of the list
+            reportList.prepend(item);
 
-@media (max-width: 960px) {
-  .dashboard { grid-template-columns: 1fr; }
-  .map.full { height: 380px; }
-}
+            // Create a marker on the map
+            const marker = L.marker([report.location.lat, report.location.lng]).addTo(map);
+            marker.bindPopup(`<b>SOS Alert</b><br>Received: ${new Date(report.createdAt).toLocaleString()}`);
+            markers[reportId] = marker;
+
+            // Center the map on the new alert
+            map.setView([report.location.lat, report.location.lng], 15);
+
+            // Update banner
+            updateUI();
+
+            // Add click listener to focus on this marker
+            item.addEventListener('click', () => {
+                map.setView([marker.getLatLng().lat, marker.getLatLng().lng], 16);
+                marker.openPopup();
+            });
+        });
+
+        // 2. Listen for changes (live location updates) to existing reports
+        reportsRef.on('child_changed', (snapshot) => {
+            const reportId = snapshot.key;
+            const report = snapshot.val();
+
+            if (markers[reportId]) {
+                const newLatLng = [report.location.lat, report.location.lng];
+                // Move the marker smoothly to the new location
+                markers[reportId].setLatLng(newLatLng);
+                
+                // Update the coordinates in the list item
+                const item = document.getElementById(`item-${reportId}`);
+                item.querySelector('.coords').textContent = `Lat: ${report.location.lat.toFixed(5)}, Lng: ${report.location.lng.toFixed(5)}`;
+                
+                // Update the 'updated at' timestamp
+                const updatedAtEl = document.getElementById(`updated-${reportId}`);
+                if(report.updatedAt) {
+                    updatedAtEl.textContent = `Updated: ${new Date(report.updatedAt).toLocaleString()}`;
+                }
+            }
+        });
+
+        // 3. Listen for a report being removed (for real-time sync)
+        reportsRef.on('child_removed', (snapshot) => {
+            const reportId = snapshot.key;
+            if (markers[reportId]) {
+                map.removeLayer(markers[reportId]); // Remove marker from map
+                delete markers[reportId]; // Remove from our state
+                
+                const item = document.getElementById(`item-${reportId}`);
+                if (item) item.remove(); // Remove item from list
+                
+                updateUI();
+            }
+        });
+        
+        // Button to clear all reports from the database
+        clearButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to remove all SOS reports?')) {
+                reportsRef.set(null); // This deletes all data at the 'sos_reports' path
+            }
+        });
+
+    </script>
+</body>
+</html>
