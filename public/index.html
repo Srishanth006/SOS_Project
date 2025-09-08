@@ -18,7 +18,6 @@
             position: relative;
         }
         
-        /* --- NEW: Abstract background graphics --- */
         .graphic {
             position: absolute;
             background-color: #FFC300; /* Bee-Yellow */
@@ -70,7 +69,6 @@
             box-shadow: 0 8px 15px -5px rgba(255, 195, 0, 0.4);
         }
 
-        /* Responsive for smaller screens */
         @media (max-width: 600px) {
             .language-grid { grid-template-columns: 1fr 1fr; }
             h1 { font-size: 2rem; }
@@ -79,7 +77,6 @@
 </head>
 <body>
 
-    <!-- Background graphics -->
     <div class="graphic g1"></div>
     <div class="graphic g2"></div>
     <div class="graphic g3"></div>
@@ -88,13 +85,13 @@
         <h1>Welcome</h1>
         <p>Please select your preferred language.</p>
         <div class="language-grid">
-            <!-- For now, all buttons go to home.html. This can be changed later. -->
-            <a href="/home.html" class="lang-button">English</a>
-            <a href="/home.html" class="lang-button">हिन्दी</a>
-            <a href="/home.html" class="lang-button">தமிழ்</a>
-            <a href="/home.html" class="lang-button">తెలుగు</a>
-            <a href="/home.html" class="lang-button">മലയാളം</a>
-            <a href="/home.html" class="lang-button">ಕನ್ನಡ</a>
+            <!-- MODIFIED: Links now point to language-specific folders -->
+            <a href="/en/home.html" class="lang-button">English</a>
+            <a href="/hi/home.html" class="lang-button">हिन्दी</a>
+            <a href="/ta/home.html" class="lang-button">தமிழ்</a>
+            <a href="/te/home.html" class="lang-button">తెలుగు</a>
+            <a href="/ml/home.html" class="lang-button">മലയാളം</a>
+            <a href="/kn/home.html" class="lang-button">ಕನ್ನಡ</a>
         </div>
     </div>
 
