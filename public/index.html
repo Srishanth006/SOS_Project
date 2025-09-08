@@ -12,7 +12,6 @@
             color: #333; /* Dark grey text for readability */
             background: #ffffff; /* Pure white background */
             line-height: 1.6;
-            overflow: hidden;
         }
 
         /* --- Hero Section Layout --- */
@@ -24,6 +23,7 @@
             text-align: center;
             min-height: 100vh;
             padding: 2rem;
+            box-sizing: border-box; /* Ensures padding is included in height */
         }
 
         h1 {
@@ -63,9 +63,9 @@
 
         .details-buttons { margin-top: 3.5rem; display: flex; gap: 1.5rem; }
         .detail-button {
-            background: #313233; /* Very light grey */
+            background: #f8f9fa; /* Very light grey */
             border: 1px solid #dee2e6;
-            color: #f8fbfd;
+            color: #495057;
             padding: 0.8rem 2rem;
             border-radius: 50px;
             font-size: 1.1rem;
@@ -111,16 +111,26 @@
         .modal-content a:hover { text-decoration: underline; }
         .modal-content ul { list-style-type: '✓  '; padding-left: 1.5rem; margin: 0; text-align: left; color: #555; }
         .modal-content li { margin-bottom: 0.5rem; }
+
+        /* --- NEW: Footer Styling --- */
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 1.5rem 0;
+            color: #141414; /* A subtle, light grey */
+            font-style: italic;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: larger;
+        }
     </style>
 </head>
 <body>
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>S.A.F.E</h1>
-        <h2>
-          The future of women Safety
-        </h2>
+        <h1>Suraksha Jhumka</h1>
         <p class="tagline">
             Building a safer, more inclusive world with technology that empowers everyone. Our mission is to ensure no one is left behind.
         </p>
@@ -162,6 +172,12 @@
             <p><strong>Total Estimated Cost:</strong> Approximately ₹1500 - ₹2000 per unit.</p>
         </div>
     </div>
+
+    <!-- NEW: Footer Element -->
+    <footer class="footer">
+        <font></font>
+        "The best protection a woman can have is courage."
+    </footer>
 
     <script>
         // JavaScript for the modal functionality (unchanged)
