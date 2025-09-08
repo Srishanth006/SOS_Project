@@ -4,13 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Police Command Center - S.A.F.E. Alerts</title>
+    <!-- Link to the matching style.css file -->
     <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 </head>
 <body>
 
     <header class="app-header">
-        <!-- New Logo/Emblem -->
+        <!-- Professional Logo/Emblem -->
         <svg class="header-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="50" r="48" fill="#0d6efd" stroke="#0a58ca" stroke-width="4"/>
             <circle cx="50" cy="50" r="15" fill="none" stroke="#fff" stroke-width="4"/>
@@ -53,10 +54,10 @@
         // --- YOUR FIREBASE BACKEND CODE (ENTIRELY UNCHANGED) ---
         const FIREBASE_CONFIG = {
             apiKey: "AIzaSyDJG7XujjzGVGrdiDzYjPgdw34mFw6mkIA",
-            authDomain: "alert-system-a99ab.firebaseapp.com",
+            authDomain: "alert-system-a9_REPLACE_THIS_a9ab.firebaseapp.com", // Example placeholder
             databaseURL: "https://alert-system-a99ab-default-rtdb.firebaseio.com",
             projectId: "alert-system-a99ab",
-            storageBucket: "alert-system-a99ab.firebasestorage.app",
+            storageBucket: "alert-system-a99ab.appspot.com", // Example placeholder
             messagingSenderId: "301074962948",
             appId: "1:301074962948:web:a32821f6312145e1627351",
             measurementId: "G-0C5EPXJGED"
@@ -74,7 +75,6 @@
         const accuracyCircles = {};
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap' }).addTo(map);
 
-        // All functions and listeners are the same, but the innerHTML of the report item is updated.
         function playSound() { alertSound.play().catch(error => console.log("Audio play blocked.", error)); }
         function updateUI() { const reportCount = Object.keys(markers).length; alertCount.textContent = reportCount; alertBanner.style.display = reportCount > 0 ? 'flex' : 'none'; }
         
@@ -89,7 +89,6 @@
             const item = document.createElement('div');
             item.className = 'report-item';
             item.id = `item-${reportId}`;
-            // NEW item structure
             item.innerHTML = `
                 <div class="status-indicator">
                     <div class="status-dot"></div>
@@ -112,8 +111,39 @@
             item.addEventListener('click', () => { map.fitBounds(accuracyCircles[reportId].getBounds(), { padding: [50, 50] }); marker.openPopup(); });
         });
 
-        reportsRef.on('child_changed', (snapshot) => { /* This function is unchanged */ });
-        reportsRef.on('child_removed', (snapshot) => { /* This function is unchanged */ });
+        reportsRef.on('child_changed', (snapshot) => {
+             const reportId = snapshot.key;
+             const report = snapshot.val();
+             if (markers[reportId]) {
+                 const lat = report.location.lat;
+                 const lng = report.location.lng;
+                 const accuracy = report.location.accuracy;
+                 const newLatLng = [lat, lng];
+                 markers[reportId].setLatLng(newLatLng);
+                 accuracyCircles[reportId].setLatLng(newLatLng).setRadius(accuracy);
+                 const item = document.getElementById(`item-${reportId}`);
+                 item.querySelector('.coords').textContent = `Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
+                 item.querySelector('.accuracy-info').textContent = `Accuracy: ±${Math.round(accuracy)}m`;
+                 const updatedAtEl = document.getElementById(`updated-${reportId}`);
+                 if (report.updatedAt) {
+                     updatedAtEl.textContent = `Updated: ${new Date(report.updatedAt).toLocaleString()}`;
+                 }
+             }
+        });
+
+        reportsRef.on('child_removed', (snapshot) => {
+            const reportId = snapshot.key;
+            if (markers[reportId]) {
+                map.removeLayer(markers[reportId]);
+                delete markers[reportId];
+                map.removeLayer(accuracyCircles[reportId]);
+                delete accuracyCircles[reportId];
+                const item = document.getElementById(`item-${reportId}`);
+                if (item) item.remove();
+                updateUI();
+            }
+        });
+
         clearButton.addEventListener('click', () => { if (confirm('Are you sure you want to remove all incidents?')) { reportsRef.set(null); } });
     </script>
 </body>
