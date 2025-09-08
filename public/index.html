@@ -3,182 +3,100 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>S.A.F.E- The Future of Women Safety</title>
+    <title>Welcome - S.A.F.E.</title>
     <style>
-        /* --- General Styling --- */
-        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #333; background: #ffffff; line-height: 1.6; overflow: hidden; }
-
-        /* --- Video Background Styling --- */
-        .video-background { position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%; width: auto; height: auto; z-index: -2; transform: translateX(-50%) translateY(-50%); object-fit: cover; }
-        .video-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(8px); z-index: -1; }
-
-        /* --- Hero Section & Buttons --- */
-        .hero { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 100vh; padding: 2rem; box-sizing: border-box; }
-        h1 { font-size: 3.5rem; margin-bottom: 1rem; color: #222; }
-        .tagline { font-size: 1.25rem; color: #555; max-width: 600px; margin-bottom: 2.5rem; }
-        
-        /* --- NEW: Button Theme (White & Bee-Yellow) --- */
-        .themed-button {
-            border-radius: 50px; text-decoration: none; font-size: 1.1rem; font-weight: 600;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease-out;
-            background-color: #ffffff; /* Normal state: White */
-            color: #333;
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            background-color: #ffffff;
+            color: #212529;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
-        .themed-button:hover {
-            background-color: #FFC300; /* Hover state: Bee-Yellow */
+        
+        /* --- NEW: Abstract background graphics --- */
+        .graphic {
+            position: absolute;
+            background-color: #FFC300; /* Bee-Yellow */
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+        .graphic.g1 { width: 400px; height: 400px; top: -100px; left: -150px; }
+        .graphic.g2 { width: 300px; height: 300px; bottom: -80px; right: -120px; }
+        .graphic.g3 { width: 150px; height: 150px; top: 10%; right: 15%; }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            border: 1px solid #f8f9fa;
+        }
+
+        h1 { font-size: 2.5rem; margin-top: 0; margin-bottom: 0.5rem; }
+        p { font-size: 1.1rem; color: #6c757d; margin-bottom: 2rem; }
+
+        .language-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .lang-button {
+            display: block;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            color: #495057;
+            padding: 1.5rem 1rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease-out;
+        }
+        .lang-button:hover {
+            background-color: #FFC300;
             color: #000;
             border-color: #E6B000;
-            transform: translateY(-3px);
+            transform: translateY(-4px);
             box-shadow: 0 8px 15px -5px rgba(255, 195, 0, 0.4);
         }
 
-        .cta-button { padding: 1rem 2.5rem; }
-        .details-buttons { margin-top: 3.5rem; display: flex; gap: 1.5rem; }
-        .detail-button { padding: 0.8rem 2rem; }
-
-        /* --- Modal Styling --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s; z-index: 100; }
-        .modal-overlay.show { opacity: 1; visibility: visible; }
-        .modal-content { background: #ffffff; border-radius: 24px; padding: 2.5rem; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s; box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2); }
-        .modal-overlay.show .modal-content { transform: scale(1); }
-        .modal-content h2 { margin-top: 0; font-size: 1.5rem; color: #222; }
-        .modal-content p { margin: 0 0 1rem; color: #555; }
-        .modal-content strong { color: #333; }
-        .modal-content a { color: #007bff; text-decoration: none; font-weight: 500; }
-        .modal-content a:hover { text-decoration: underline; }
-        .modal-content ul { list-style-type: '✓  '; padding-left: 1.5rem; margin: 0; text-align: left; color: #555; }
-        .modal-content li { margin-bottom: 0.5rem; }
-
-        /* --- NEW: Sidebar Menu Styling --- */
-        .menu-toggle {
-            position: fixed; top: 25px; left: 25px; z-index: 101;
-            width: 40px; height: 40px; background: #fff; border: 1px solid #dee2e6;
-            border-radius: 50%; cursor: pointer; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 5px;
-            box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.1);
+        /* Responsive for smaller screens */
+        @media (max-width: 600px) {
+            .language-grid { grid-template-columns: 1fr 1fr; }
+            h1 { font-size: 2rem; }
         }
-        .menu-toggle .bar { width: 20px; height: 2px; background-color: #333; }
-
-        .sidebar-menu {
-            position: fixed; top: 0; left: 0; height: 100%; width: 320px;
-            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px);
-            border-right: 1px solid #dee2e6;
-            box-shadow: 5px 0 25px -10px rgba(0,0,0,0.1);
-            transform: translateX(-100%);
-            transition: transform 0.4s ease-in-out;
-            z-index: 100; padding: 2rem; box-sizing: border-box;
-        }
-        .sidebar-menu.open { transform: translateX(0); }
-        .sidebar-menu h2 { margin-top: 4rem; font-size: 1.5rem; }
-        .sidebar-menu .menu-section { margin-top: 2rem; }
-        .sidebar-menu .menu-section h3 { font-size: 1.1rem; color: #555; border-bottom: 1px solid #dee2e6; padding-bottom: 0.5rem; }
-        .sidebar-menu a, .sidebar-menu p { display: block; color: #333; text-decoration: none; padding: 0.5rem 0; }
-        .sidebar-menu a:hover { color: #007bff; }
-        .sidebar-menu p strong { color: #000; }
-
-        /* --- Footer Styling --- */
-        .footer { position: absolute; bottom: 0; width: 100%; text-align: center; padding: 1.5rem 0; color: #0c0101; font-family: Arial, Helvetica, sans-serif; font: italic; font-size: larger; }
     </style>
 </head>
 <body>
 
-    <!-- Video Background Elements -->
-    <div class="video-overlay"></div>
-    <video id="bg-video" class="video-background" autoplay loop muted playsinline crossOrigin="anonymous">
-        <source src="/dynamic-background.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <!-- Background graphics -->
+    <div class="graphic g1"></div>
+    <div class="graphic g2"></div>
+    <div class="graphic g3"></div>
 
-    <!-- NEW: Sidebar Menu Icon -->
-    <button id="menu-toggle" class="menu-toggle">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
-    </button>
-
-    <!-- NEW: Sidebar Menu (Hidden by default) -->
-    <nav id="sidebar-menu" class="sidebar-menu">
-        <h2>Resources</h2>
-        <div class="menu-section">
-            <h3>Helpline Numbers (India)</h3>
-            <p>Women Helpline: <strong>1091 / 181</strong></p>
-            <p>Police Emergency: <strong>112</strong></p>
-        </div>
-        <div class="menu-section">
-            <h3>Know Your Rights</h3>
-            <a href="https://ncw.nic.in/important-links/legal-provisions-women" target="_blank">Legal Provisions for Women (NCW)</a>
-        </div>
-        <div class="menu-section">
-            <h3>Self-Defense Videos</h3>
-            <a href="https://www.youtube.com/watch?v=KVpxP3qA2KY" target="_blank">Basic Escapes & Defenses</a>
-            <a href="https://www.youtube.com/watch?v=912cwgHe_gE" target="_blank">Wrist Grab Techniques</a>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1>S.A.F.E</h1>
-        <p class="tagline">
-            Building a safer, more inclusive world with technology that empowers everyone. Our mission is to ensure no one is left behind.
-        </p>
-        <a href="/sender.html" class="cta-button themed-button">Launch the Jhumka Demo</a>
-
-        <!-- Detail Buttons -->
-        <div class="details-buttons">
-            <button class="detail-button themed-button" data-modal="modal-circuit">Circuit Diagram</button>
-            <button class="detail-button themed-button" data-modal="modal-materials">Materials Required</button>
-            <button class="detail-button themed-button" data-modal="modal-budget">Estimated Budget</button>
-        </div>
-    </section>
-
-    <!-- Modals -->
-    <div id="modal-circuit" class="modal-overlay">
-        <div class="modal-content">
-            <h2>Circuit Diagram</h2>
-            <p>The core of our device is a custom-designed circuit built for reliability and low power consumption.</p>
-            <!-- UPDATED: Added second link -->
-            <a href="#" target="_blank">View Main Diagram (Drive Link)</a>
-            <br><br>
-            <a href="#" target="_blank">View Power Module Schematic</a>
+    <div class="container">
+        <h1>Welcome</h1>
+        <p>Please select your preferred language.</p>
+        <div class="language-grid">
+            <!-- For now, all buttons go to home.html. This can be changed later. -->
+            <a href="/home.html" class="lang-button">English</a>
+            <a href="/home.html" class="lang-button">हिन्दी</a>
+            <a href="/home.html" class="lang-button">தமிழ்</a>
+            <a href="/home.html" class="lang-button">తెలుగు</a>
+            <a href="/home.html" class="lang-button">മലയാളം</a>
+            <a href="/home.html" class="lang-button">ಕನ್ನಡ</a>
         </div>
     </div>
-    <div id="modal-materials" class="modal-overlay"> ... </div>
-    <div id="modal-budget" class="modal-overlay"> ... </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        "The Best Protection a Woman Can Have is Courage."
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- Modal logic ---
-            const detailButtons = document.querySelectorAll('.detail-button');
-            const modalOverlays = document.querySelectorAll('.modal-overlay');
-            detailButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const modalId = button.getAttribute('data-modal');
-                    document.getElementById(modalId).classList.add('show');
-                });
-            });
-            modalOverlays.forEach(overlay => {
-                overlay.addEventListener('click', (event) => {
-                    if (event.target === overlay) {
-                        overlay.classList.remove('show');
-                    }
-                });
-            });
-
-            // --- NEW: SIDEBAR MENU LOGIC ---
-            const menuToggle = document.getElementById('menu-toggle');
-            const sidebar = document.getElementById('sidebar-menu');
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-        });
-    </script>
 </body>
 </html>
