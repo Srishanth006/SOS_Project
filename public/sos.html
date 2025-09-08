@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SOS — Sender + Police Dashboard (Single File)</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <style>
+      :root { --bg:#0f172a; --panel:#121a34; --text:#e2e8f0; --muted:#94a3b8; --brand:#3b82f6; --brand-600:#2563eb; --danger:#ef4444; --success:#22c55e; --border:#233053; }
+      *{box-sizing:border-box} html,body{height:100%} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";background:linear-gradient(180deg,#0b1227,var(--bg));color:var(--text)}
+      .app-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-bottom:1px solid var(--border);background:rgba(3,8,23,.6);backdrop-filter:blur(8px)}
+      .app-header h1{margin:0;font-size:20px}
+      .tabs{display:flex;gap:8px}
+      .tab{appearance:none;border:1px solid var(--border);background:#0b1530;color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer}
+      .tab.active{background:var(--brand);border-color:var(--brand-600)}
+      .container{max-width:1100px;margin:16px auto;padding:0 12px}
+      .grid{display:grid;grid-template-columns:1fr;gap:16px}
+      .card{background:linear-gradient(180deg,#0f1936,#0c1731);border:1px solid var(--border);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+      .btn{appearance:none;border:1px solid var(--border);background:#0b1530;color:var(--text);padding:10px 14px;border-radius:8px;cursor:pointer}
+      .btn-primary{background:var(--brand);border-color:var(--brand-600)}
+      .status{margin-top:10px;color:var(--muted)} .status.ok{color:var(--success)} .status.err{color:var(--danger)}
+      .map{width:100%;height:320px;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+      .dashboard{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+      .panel{background:linear-gradient(180deg,#0f1936,#0c1731);border:1px solid var(--border);border-radius:12px;padding:12px}
+      .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+      .list{max-height:calc(100vh - 220px);overflow:auto;display:grid;gap:8px}
+      .report-item{background:#0b1530;border:1px solid var(--border);padding:10px;border-radius:8px}
+      .report-item .meta{color:var(--muted);font-size:12px}
+      .report-item .coords{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+      .alert-banner{display:flex;align-items:center;gap:10px;color:#fff;background:rgba(239,68,68,.22);padding:8px 12px;border:1px solid rgba(239,68,68,.35);border-radius:8px}
+      .badge{background:var(--danger);color:#fff;border-radius:999px;padding:2px 8px;font-weight:600}
+      @media (max-width: 960px){.dashboard{grid-template-columns:1fr}.map{height:280px}}
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Police Dashboard — SOS Alerts</h1>
+    </header>
+
+    <main class="container">
+      <section id="viewDashboard">
+        <div class="dashboard">
+          <div class="panel">
+            <div id="mapDashboard" class="map" style="height:calc(100vh - 180px)"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Incoming SOS Reports</h2>
+              <div style="display:flex; gap:8px; align-items:center">
+                <button id="testAlertButton" class="btn btn-primary">Send Test Alert</button>
+                <button id="simulateMoveButton" class="btn">Start Movement</button>
+                <button id="stopMoveButton" class="btn">Stop</button>
+                <button id="clearButton" class="btn">Clear (demo)</button>
+              </div>
+            </div>
+            <div class="alert-banner" id="alertBanner" style="display:none">
+              <span class="badge" id="alertCount">0</span>
+              ALERT: Someone is in danger
+            </div>
+            <div class="list" id="reportList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <audio id="beep" preload="auto">
+      <source src="data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" type="audio/mpeg" />
+    </audio>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Firebase (optional) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+      // Firebase enabled with your config
+      window.FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCxoVyXb5QBOn8SgSXBB_mlFz49natYgiw",
+        authDomain: "safe-b1a9e.firebaseapp.com",
+        databaseURL: "https://safe-b1a9e-default-rtdb.firebaseio.com",
+        projectId: "safe-b1a9e",
+        storageBucket: "safe-b1a9e.firebasestorage.app",
+        messagingSenderId: "837946324501",
+        appId: "1:837946324501:web:80204d6be80632acc6c01c",
+        measurementId: "G-DN766LN2GS"
+      };
+    </script>
+
+    <script>
+      // Hybrid store: Firebase Realtime Database if configured; otherwise local demo store
+      (function(){
+        function createDemoStore(){
+          const STORAGE_KEY='sos_reports_v1';
+          const CHANNEL_NAME='sos_channel_v1';
+          const channel=typeof BroadcastChannel!=='undefined'?new BroadcastChannel(CHANNEL_NAME):null;
+          function now(){return new Date().toISOString();}
+          function loadReports(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):[]}catch(e){console.error('load',e);return[]}}
+          function saveReports(r){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(r))}catch(e){console.error('save',e)}}
+          function broadcast(m){if(channel)channel.postMessage(m);try{localStorage.setItem(STORAGE_KEY+'_last_event',now())}catch{}}
+          function addReport(report){const r=loadReports();r.push(report);saveReports(r);broadcast({type:'report_added',report})}
+          function clearReports(){saveReports([]);broadcast({type:'reports_cleared'})}
+          function subscribe(cb){const listener=(ev)=>{try{cb(ev.data)}catch{}};if(channel)channel.addEventListener('message',listener);window.addEventListener('storage',(e)=>{if(e.key===STORAGE_KEY+'_last_event'){cb({type:'sync',reports:loadReports()})}});return()=>{if(channel)channel.removeEventListener('message',listener)}}
+          return { loadReports, addReport, clearReports, subscribe, mode:'demo' };
+        }
+
+        function createFirebaseStore(config){
+          try{
+            const app=firebase.initializeApp(config);
+            const db=firebase.database();
+            const baseRef=db.ref('sos_reports');
+            function loadReports(){ return baseRef.once('value').then(snap=>{ const val=snap.val()||{}; return Object.entries(val).map(([id,r])=>({...r,id})).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)); }).catch(()=>[]); }
+            function addReport(report){ const ref=baseRef.push(); return ref.set(report).then(()=>ref.key); }
+            function updateReport(id, partial){ return baseRef.child(id).update(partial); }
+            function clearReports(){ return baseRef.remove(); }
+            function subscribe(cb){
+              baseRef.on('child_added',(snap)=>{ cb({type:'report_added', report:{...snap.val(), id:snap.key}}); });
+              baseRef.on('child_changed',(snap)=>{ cb({type:'report_updated', report:{...snap.val(), id:snap.key}}); });
+              baseRef.on('value',()=>{ loadReports().then(reports=>cb({type:'sync',reports})).catch(()=>{}); });
+              return ()=>{ baseRef.off(); };
+            }
+            return { loadReports, addReport, updateReport, clearReports, subscribe, mode:'firebase' };
+          }catch(e){ console.error('Firebase init failed, falling back to demo', e); return null; }
+        }
+
+        let store = null;
+        if(window.FIREBASE_CONFIG && typeof firebase!=='undefined'){
+          store = createFirebaseStore(window.FIREBASE_CONFIG);
+        }
+        if(!store){ store = createDemoStore(); }
+        window.SOSStore = store;
+        // Optional UI hint
+        console.log('SOSStore mode:', store.mode);
+      })();
+    </script>
+
+    <!-- Sender UI removed -->
+
+    <script>
+      // police.js inline (auto-init)
+      (function(){
+        let mapDash, tiles;
+        function initDash(){
+          mapDash=L.map('mapDashboard');
+          tiles=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'});
+          tiles.addTo(mapDash); mapDash.setView([20,0],2);
+        }
+        const alertBanner=document.getElementById('alertBanner');
+        const alertCount=document.getElementById('alertCount');
+        const reportList=document.getElementById('reportList');
+        const clearButton=document.getElementById('clearButton');
+        const testAlertButton=document.getElementById('testAlertButton');
+        const simulateMoveButton=document.getElementById('simulateMoveButton');
+        const stopMoveButton=document.getElementById('stopMoveButton');
+        const beep=document.getElementById('beep');
+        const markersById=new Map();
+        const circlesById=new Map();
+        function renderReports(reports){
+          reportList.innerHTML='';
+          const sorted=reports.slice().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+          for(const r of sorted){
+            const item=document.createElement('div');
+            item.className='report-item';
+            item.innerHTML=`<div><strong>ALERT:</strong> Someone is in danger</div>
+            <div class="coords">Lat: ${r.location.lat.toFixed(5)}, Lng: ${r.location.lng.toFixed(5)} (±${Math.round(r.location.accuracy||0)}m)</div>
+            <div class="meta">Received: ${new Date(r.createdAt).toLocaleString()}</div>`;
+            item.addEventListener('click',()=>{mapDash.setView([r.location.lat,r.location.lng],16)});
+            reportList.appendChild(item);
+          }
+          alertCount.textContent=String(reports.length);
+          alertBanner.style.display=reports.length>0?'flex':'none';
+        }
+        function upsertMarker(report){
+          const {id,location}=report;
+          if(markersById.has(id)){
+            markersById.get(id).setLatLng([location.lat,location.lng]);
+            const circle=circlesById.get(id); if(circle) circle.setLatLng([location.lat,location.lng]);
+            return;
+          }
+          const marker=L.marker([location.lat,location.lng]).addTo(mapDash);
+          marker.bindPopup(`<strong>ALERT</strong><br/>${new Date(report.createdAt).toLocaleString()}`);
+          markersById.set(id,marker);
+          const circle=L.circle([location.lat,location.lng],{radius:location.accuracy||30,color:'#ef4444',fillOpacity:.08}).addTo(mapDash);
+          circlesById.set(id,circle);
+        }
+        async function fullSync(){
+          const reports=await window.SOSStore.loadReports();
+          renderReports(reports);
+          markersById.clear();
+          circlesById.clear();
+          for(const r of reports) upsertMarker(r);
+        }
+        clearButton.addEventListener('click',()=>{window.SOSStore.clearReports()});
+        
+        // Test helpers (no extra Firebase init)
+        let lastReportId=null; let moveTimer=null; let basePoint=null; let step=0;
+        function randomNear(lat,lng,delta){ return [lat+(Math.random()-0.5)*delta, lng+(Math.random()-0.5)*delta]; }
+        async function sendTestAlert(){
+          function write(lat,lng,accuracy){
+            const report={ createdAt:new Date().toISOString(), location:{ lat, lng, accuracy:Math.round(accuracy||15) } };
+            return Promise.resolve(window.SOSStore.addReport(report)).then((id)=>{ if(id) lastReportId=id; if(!basePoint) basePoint=[lat,lng]; console.log('Test alert sent', {id}); return id; });
+          }
+          if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition((pos)=>{ write(pos.coords.latitude,pos.coords.longitude,pos.coords.accuracy); },()=>{ const [lat,lng]=[12.9716,77.5946]; write(lat,lng,20); },{enableHighAccuracy:true,timeout:8000});
+          } else {
+            const [lat,lng]=[12.9716,77.5946]; write(lat,lng,20);
+          }
+        }
+        function startMovement(){
+          if(moveTimer) return; if(!basePoint){ console.warn('No base point yet, sending test alert first'); sendTestAlert(); }
+          moveTimer=setInterval(()=>{
+            step+=1; const delta=0.001; const [lat0,lng0]=basePoint||[12.9716,77.5946]; const [lat,lng]=randomNear(lat0,lng0,delta);
+            if(typeof window.SOSStore.updateReport==='function' && lastReportId){
+              window.SOSStore.updateReport(lastReportId,{ location:{ lat, lng, accuracy:15 }, updatedAt:new Date().toISOString() }).catch(()=>{});
+            } else {
+              window.SOSStore.addReport({ createdAt:new Date().toISOString(), location:{ lat, lng, accuracy:15 } });
+            }
+          }, 1500);
+        }
+        function stopMovement(){ if(moveTimer){ clearInterval(moveTimer); moveTimer=null; } }
+        testAlertButton.addEventListener('click', sendTestAlert);
+        simulateMoveButton.addEventListener('click', startMovement);
+        stopMoveButton.addEventListener('click', stopMovement);
+        function ensureDashReady(){ if(!mapDash){ initDash(); fullSync(); window.SOSStore.subscribe(async (msg)=>{ if(!msg) return; if(msg.type==='report_added' || msg.type==='report_updated'){ try{beep.currentTime=0;beep.play()}catch{} const reports=await window.SOSStore.loadReports(); renderReports(reports); upsertMarker(msg.report); if(reports.length===1){ mapDash.setView([msg.report.location.lat,msg.report.location.lng],14); } } else if(msg.type==='reports_cleared' || msg.type==='sync'){ fullSync(); } }); } }
+        // Auto-init immediately (receiver-only)
+        ensureDashReady();
+      })();
+    </script>
+    
+  </body>
+  </html>
+
+
