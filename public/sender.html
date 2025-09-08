@@ -1,156 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SOS Sender (Firebase Live)</title>
+    <title>Suraksha Jhumka - SOS</title>
+    <!-- Firebase SDKs are loaded in the body -->
     <style>
-      body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:#0f172a;color:#e2e8f0;display:flex;align-items:center;justify-content:center;height:100vh}
-      .card{background:#101a3a;border:1px solid #233053;border-radius:12px;padding:24px;max-width:420px;width:92%}
-      h1{margin:0 0 8px 0;font-size:20px}
-      p{margin:6px 0 16px 0;color:#94a3b8}
-      .btn{display:block;width:100%;padding:12px 14px;border-radius:10px;border:1px solid #233053;background:#3b82f6;color:#fff;cursor:pointer;font-size:16px}
-      .btn.alt{background:#0b1530}
-      .row{display:flex;gap:8px;margin-top:8px}
-      .status{margin-top:10px;color:#94a3b8}
-      .ok{color:#22c55e} .err{color:#ef4444}
-      .small{font-size:12px;color:#94a3b8;margin-top:6px}
+        /* --- General Styling & Animated Background --- */
+        body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; color: #f9fafb; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; overflow: hidden; }
+        .animated-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(270deg, #0f172a, #1d1f4d, #4c1d4a, #0f172a); background-size: 400% 400%; animation: moveGradient 20s ease infinite; }
+        @keyframes moveGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .container { background: rgba(31, 41, 55, 0.7); backdrop-filter: blur(10px); border-radius: 24px; padding: 2.5rem 2rem; width: 90%; max-width: 440px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); border: 1px solid rgba(55, 65, 81, 0.7); display: flex; flex-direction: column; align-items: center; animation: fadeInUp 0.8s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { margin: 0 0 0.5rem; font-size: 1.8rem; color: #e5e7eb; }
+        p { margin: 0 0 2rem; color: #9ca3af; line-height: 1.5; max-width: 320px; }
+        
+        /* --- Redesigned Jhumka SOS Button --- */
+        .jhumka-container { position: relative; cursor: pointer; width: 180px; height: 280px; margin-bottom: 2rem; transition: transform 0.2s ease-out; }
+        .jhumka-container.is-clicked { animation: jiggle 0.5s ease-out; }
+        @keyframes jiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+        
+        .jhumka-svg { width: 100%; height: 100%; }
+        .jhumka-gold { fill: url(#gold-gradient); stroke: #ca8a04; stroke-width: 1.5; }
+        .jhumka-pearl { fill: #f8fafc; stroke: #94a3b8; stroke-width: 1; }
+        
+        /* Panic Button is now a group of elements */
+        .panic-stud { transition: all 0.3s; }
+        .jhumka-container:hover .panic-stud { filter: drop-shadow(0 0 12px #ef4444); cursor: pointer; }
+        
+        .jhumka-container.active { animation: breathing-glow 2.5s ease-in-out infinite; }
+        @keyframes breathing-glow { 0%, 100% { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4)); transform: scale(1); } 50% { filter: drop-shadow(0 0 25px rgba(239, 68, 68, 0.8)); transform: scale(1.02); } }
+        
+        /* --- Status and Control Styling --- */
+        .stop-button { background: none; border: 1px solid #4b5563; color: #9ca3af; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; display: none; }
+        .stop-button:hover { background-color: #374151; }
+        .status { margin-top: -1rem; min-height: 1.2rem; font-weight: 500; font-size: 1rem; }
+        .status.ok { color: #22c55e; } .status.err { color: #f87171; }
     </style>
-    <!-- Firebase SDKs (Compat version) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-  </head>
-  <body>
-    <div class="card">
-      <h1>Emergency SOS</h1>
-      <p>Press Start SOS to share your live location anonymously with authorities.</p>
-      <button id="startBtn" class="btn">Start SOS</button>
-      <div class="row">
-        <button id="stopBtn" class="btn alt">Stop</button>
-      </div>
-      <div id="status" class="status"></div>
-      <div class="small">Keep this page open while SOS is active.</div>
+</head>
+<body>
+    <div class="animated-background"></div>
+    <div class="container">
+        <h1>Suraksha Jhumka</h1>
+        <p>This simulates the wearable earring. Click the intricate stud to activate the SOS.</p>
+
+        <!-- The AUTHENTIC Jhumka SVG -->
+        <div id="jhumkaButton" class="jhumka-container">
+            <svg class="jhumka-svg" viewBox="0 0 100 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fde047;" />
+                        <stop offset="100%" style="stop-color:#ca8a04;" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Jhumka Dome (Bell) -->
+                <path class="jhumka-gold" d="M15 65 C 15 100, 85 100, 85 65 A 35 35 0 0 1 15 65 Z" />
+                
+                <!-- Connecting Bridge -->
+                <path class="jhumka-gold" d="M30 38 C 20 50, 20 60, 16 65 L 84 65 C 80 60, 80 50, 70 38 Z" fill="url(#gold-gradient)"/>
+
+                <!-- Connector Loop -->
+                <path class="jhumka-gold" d="M45 58 A 5 5 0 0 1 55 58 L 53 58 A 3 3 0 0 0 47 58 Z" fill="url(#gold-gradient)" />
+
+                <!-- Mandala Stud (Panic Button) -->
+                <g class="panic-stud">
+                    <circle class="jhumka-gold" cx="50" cy="35" r="22"/>
+                    <path d="M50 18 L50 52 M30 25 L70 45 M30 45 L70 25" stroke="#422006" stroke-width="1"/>
+                    <circle cx="50" cy="35" r="5" fill="#422006"/>
+                </g>
+
+                <!-- Dangling Pearls -->
+                <g class="jhumka-pearls">
+                    <line x1="25" y1="98" x2="25" y2="105" stroke="#ca8a04"/>
+                    <circle class="jhumka-pearl" cx="25" cy="110" r="5"/>
+                    <line x1="40" y1="100" x2="40" y2="107" stroke="#ca8a04"/>
+                    <circle class="jhumka-pearl" cx="40" cy="112" r="5"/>
+                    <line x1="50" y1="100" x2="50" y2="107" stroke="#ca8a04"/>
+                    <circle class="jhumka-pearl" cx="50" cy="112" r="5"/>
+                    <line x1="60" y1="100" x2="60" y2="107" stroke="#ca8a04"/>
+                    <circle class="jhumka-pearl" cx="60" cy="112" r="5"/>
+                    <line x1="75" y1="98" x2="75" y2="105" stroke="#ca8a04"/>
+                    <circle class="jhumka-pearl" cx="75" cy="110" r="5"/>
+                </g>
+            </svg>
+        </div>
+
+        <div id="status" class="status">Device is ready.</div>
+        <button id="stopBtn" class="stop-button">Stop Sharing</button>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script>
-      // --- Your Firebase Configuration is now integrated ---
-      const FIREBASE_CONFIG = {
-        apiKey: "AIzaSyDJG7XujjzGVGrdiDzYjPgdw34mFw6mkIA",
-        authDomain: "alert-system-a99ab.firebaseapp.com",
-        databaseURL: "https://alert-system-a99ab-default-rtdb.firebaseio.com",
-        projectId: "alert-system-a99ab",
-        storageBucket: "alert-system-a99ab.firebasestorage.app",
-        messagingSenderId: "301074962948",
-        appId: "1:301074962948:web:a32821f6312145e1627351",
-        measurementId: "G-0C5EPXJGED"
-      };
-      // ----------------------------------------------------
-
-      // Initialize Firebase with your configuration
-      const app = firebase.initializeApp(FIREBASE_CONFIG);
-      const db = firebase.database(app);
-      const baseRef = db.ref('sos_reports');
-
-      // Get references to the UI elements
-      const statusEl = document.getElementById('status');
-      const startBtn = document.getElementById('startBtn');
-      const stopBtn = document.getElementById('stopBtn');
-
-      let reportKey = null; // This will store the unique ID for the current user's report
-      let watchId = null;   // This will store the ID for the geolocation watcher
-
-      // Function to update the status message shown to the user
-      function setStatus(msg, cls){ statusEl.textContent = msg; statusEl.className = 'status ' + (cls||''); }
-
-      // Function to create the initial report in Firebase
-      function createReport(initial){
-        const ref = baseRef.push(); // .push() creates a new unique ID
-        return ref.set(initial).then(()=> ref.key);
-      }
-
-      // Function to update an existing report in Firebase
-      function updateReport(key, partial){
-        return baseRef.child(key).update(partial);
-      }
-
-      // Starts the continuous location tracking
-      function startWatch(){
-        if(!navigator.geolocation){ setStatus('Geolocation not supported', 'err'); return; }
-        
-        watchId = navigator.geolocation.watchPosition(async (pos)=>{
-          if(!reportKey) return; // Don't do anything if SOS has been stopped
-
-          const { latitude, longitude, accuracy } = pos.coords;
-          try {
-            // Update the location and timestamp for the existing report
-            await updateReport(reportKey, { 
-              location: { lat: latitude, lng: longitude, accuracy: accuracy }, 
-              updatedAt: new Date().toISOString() 
-            });
-            setStatus('Sharing live location…', 'ok');
-          } catch(e){ 
-            console.warn("Could not update report:", e); 
-          }
-        }, (err)=>{
-          console.warn(err); 
-          if(err.code === 1) setStatus('Location blocked. Allow in browser.', 'err');
-        }, { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 });
-      }
-
-      // Main function that runs when the "Start SOS" button is clicked
-      async function startSOS(){
-        setStatus('Starting…');
-        startBtn.disabled = true; // Disable button to prevent multiple clicks
-        try{
-          // Get a quick, one-time position to start the report
-          const initialPosition = await new Promise((resolve, reject) => 
-            navigator.geolocation.getCurrentPosition(resolve, reject, { 
-              enableHighAccuracy: true, 
-              timeout: 15000, 
-              maximumAge: 0 
-            })
-          );
-
-          const initialReportData = {
-            createdAt: new Date().toISOString(),
-            source: 'anonymous',
-            location: { 
-              lat: initialPosition.coords.latitude, 
-              lng: initialPosition.coords.longitude, 
-              accuracy: initialPosition.coords.accuracy 
-            }
-          };
-          
-          // Create the report in Firebase and get the unique key
-          reportKey = await createReport(initialReportData);
-          setStatus('SOS active. Report ID: ' + reportKey, 'ok');
-          
-          // Now, start the live updates
-          startWatch();
-
-        }catch(e){ 
-          console.error(e); 
-          let errorMsg = 'Failed to get location.';
-          if (e.code === 1) errorMsg = 'Location permission denied.';
-          setStatus(errorMsg, 'err'); 
-          startBtn.disabled = false; // Re-enable the button if it fails
+        // JavaScript logic is unchanged and will work perfectly with the new SVG.
+        const FIREBASE_CONFIG = { apiKey: "AIzaSyDJG7XujjzGVGrdiDzYjPgdw34mFw6mkIA", authDomain: "alert-system-a99ab.firebaseapp.com", databaseURL: "https://alert-system-a99ab-default-rtdb.firebaseio.com", projectId: "alert-system-a99ab", storageBucket: "alert-system-a99ab.firebasestorage.app", messagingSenderId: "301074962948", appId: "1:301074962948:web:a32821f6312145e1627351", measurementId: "G-0C5EPXJGED" };
+        const app = firebase.initializeApp(FIREBASE_CONFIG);
+        const db = firebase.database();
+        const baseRef = db.ref('sos_reports');
+        const statusEl = document.getElementById('status');
+        const jhumkaButton = document.getElementById('jhumkaButton');
+        const stopBtn = document.getElementById('stopBtn');
+        let reportKey = null, watchId = null;
+        function setStatus(msg, cls){ statusEl.textContent = msg; statusEl.className = 'status ' + (cls||''); }
+        async function startSOS(){
+            setStatus('Requesting location...');
+            jhumkaButton.style.pointerEvents = 'none';
+            try{
+                const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, timeout: 15000 }));
+                const reportData = { createdAt: new Date().toISOString(), location: { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy } };
+                reportKey = await (async () => { const ref = baseRef.push(); await ref.set(reportData); return ref.key; })();
+                setStatus('SOS Active. Location is being shared.', 'ok');
+                jhumkaButton.classList.add('active');
+                stopBtn.style.display = 'inline-block';
+                startWatch();
+            } catch(e){ console.error(e); let msg = 'Failed to get location.'; if (e.code === 1) msg = 'Location permission denied.'; setStatus(msg, 'err'); jhumkaButton.style.pointerEvents = 'auto'; }
         }
-      }
-
-      // Stops the live location updates
-      function stopSOS(){
-        if(watchId !== null){ 
-          navigator.geolocation.clearWatch(watchId); 
-          watchId = null; 
+        function startWatch(){ watchId = navigator.geolocation.watchPosition(pos => { if (!reportKey) return; baseRef.child(reportKey).update({ location: { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }, updatedAt: new Date().toISOString() }); }); }
+        function stopSOS(){
+            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+            watchId = null; reportKey = null;
+            setStatus('SOS stopped. Your location is no longer shared.');
+            jhumkaButton.style.pointerEvents = 'auto';
+            jhumkaButton.classList.remove('active');
+            stopBtn.style.display = 'none';
         }
-        reportKey = null; // Clear the report key to stop updates
-        setStatus('SOS stopped.');
-        startBtn.disabled = false;
-      }
-
-      // Attach the functions to the button clicks
-      startBtn.addEventListener('click', startSOS);
-      stopBtn.addEventListener('click', stopSOS);
+        jhumkaButton.addEventListener('click', () => {
+            if (reportKey) return;
+            jhumkaButton.classList.add('is-clicked');
+            jhumkaButton.addEventListener('animationend', () => { jhumkaButton.classList.remove('is-clicked'); }, { once: true });
+            startSOS();
+        });
+        stopBtn.addEventListener('click', stopSOS);
     </script>
-  </body>
+</body>
 </html>

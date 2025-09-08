@@ -3,192 +3,210 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Emergency SOS</title>
+    <title>Suraksha Jhumka - Inclusive Safety for All</title>
     <style>
-        /* Global styles */
+        /* --- General Styling & Animated Background --- */
         body {
             margin: 0;
             font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+            color: #f9fafb;
+            background: #111827; /* Fallback background */
+            line-height: 1.6;
+        }
+
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(270deg, #0f172a, #1d1f4d, #4c1d4a, #0f172a);
+            background-size: 400% 400%;
+            animation: moveGradient 20s ease infinite;
+        }
+
+        @keyframes moveGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- Layout Containers --- */
+        .hero {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
             text-align: center;
-            background: #111827; /* Dark blue-gray background */
-            color: #f9fafb;
+            min-height: 90vh;
+            padding: 2rem;
         }
-
-        /* Main container for the SOS card */
+        
+        .project-details {
+            padding: 3rem 2rem;
+            background: rgba(17, 24, 39, 0.5);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid #374151;
+        }
+        
         .container {
-            background: #1f2937;
-            border-radius: 16px;
-            padding: 2rem 1.5rem;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.1);
-            border: 1px solid #374151;
-        }
-
-        /* Title styling */
-        h1 {
-            margin: 0 0 0.5rem;
-            font-size: 1.8rem;
-            color: #ef4444; /* Bright red for emergency */
-        }
-
-        /* Subtitle/instruction text */
-        p.subtitle {
-            margin: 0 0 2rem;
-            color: #9ca3af;
-            line-height: 1.5;
-        }
-
-        /* The main SOS button */
-        .sos-button {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: none;
-            background: #ef4444;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s, box-shadow 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            max-width: 800px;
             margin: 0 auto;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-        }
-        .sos-button:hover { background: #dc2626; }
-        .sos-button:disabled { cursor: not-allowed; }
-
-        /* Pulsing animation when SOS is active */
-        .sos-button.active {
-            animation: pulse 2s infinite;
-            background: #dc2626;
         }
 
-        /* The "Stop Sharing" button */
-        .stop-button {
-            background: none;
-            border: 1px solid #4b5563;
-            color: #9ca3af;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
+        /* --- Hero Section Elements --- */
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+        
+        .tagline {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: #3b82f6; /* A bright, hopeful blue */
+            color: #fff;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.3);
+        }
+        .cta-button:hover {
+            transform: translateY(-3px);
+            background-color: #2563eb;
+        }
+
+        /* --- Project Details & Dropdowns --- */
+        .project-details h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dropdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dropdown-container { margin-bottom: 12px; }
+        .dropdown-button {
+            width: 100%;
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 1rem;
+            border: 1px solid #374151;
+            border-radius: 12px;
             cursor: pointer;
-            margin-top: 1.5rem;
-            display: none; /* Hidden by default */
+            text-align: left;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
         }
-
-        /* Status message text */
-        .status { margin-top: 1.5rem; min-height: 1.2rem; font-weight: 500; }
-        .status.ok { color: #22c55e; } /* Green for success */
-        .status.err { color: #f87171; } /* Red for error */
-
-        /* Pulsing animation keyframes */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        .dropdown-button:hover { background-color: #374151; }
+        .dropdown-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: #111827;
+            border-radius: 0 0 12px 12px;
+            border: 1px solid #374151;
+            border-top: none;
+            padding: 0 1rem;
         }
+        .dropdown-content.show { max-height: 400px; padding: 1rem; }
+        .dropdown-content p { margin: 0 0 1rem; color: #9ca3af; }
+        .dropdown-content strong { color: #d1d5db; }
+        .dropdown-content a { color: #3b82f6; text-decoration: none; }
+        .dropdown-content a:hover { text-decoration: underline; }
+        .dropdown-content ul { list-style-type: '✓  '; padding-left: 1.5rem; }
+        .dropdown-content li { margin-bottom: 0.5rem; }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Emergency SOS</h1>
-        <p class="subtitle">Press the button below to send your live location to the authorities. Stay on this page.</p>
-        <button id="sosButton" class="sos-button">SOS</button>
-        <button id="stopBtn" class="stop-button">Stop Sharing</button>
-        <div id="status" class="status">Press SOS in an emergency.</div>
-    </div>
 
-    <!-- Firebase SDKs from the public CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <div class="animated-background"></div>
+
+    <!-- Hero Section: The main message -->
+    <section class="hero">
+        <h1>Suraksha Jhumka</h1>
+        <p class="tagline">
+            Building a safer, more inclusive world with technology that empowers everyone. Our mission is to ensure no one is left behind due to disability, language, or lack of resources.
+        </p>
+        <a href="/sender.html" class="cta-button">Launch the Jhumka Demo</a>
+    </section>
+
+    <!-- Project Details Section -->
+    <section class="project-details">
+        <div class="container">
+            <h2>About the Prototype</h2>
+            <div class="dropdown-grid">
+                
+                <div class="dropdown-container">
+                    <button class="dropdown-button">Circuit Diagram</button>
+                    <div class="dropdown-content">
+                        <p>The core of our device is a custom-designed circuit built for reliability and low power consumption.</p>
+                        <!-- ACTION: Replace '#' with your Google Drive link when ready -->
+                        <a href="#" target="_blank">View Circuit Diagram (Drive Link)</a>
+                    </div>
+                </div>
+
+                <div class="dropdown-container">
+                    <button class="dropdown-button">Materials Required</button>
+                    <div class="dropdown-content">
+                        <ul>
+                            <li>ESP32 Microcontroller</li>
+                            <li>GPS Module (NEO-6M)</li>
+                            <li>Push Button (Tactile Switch)</li>
+                            <li>LiPo Battery & Charger Module</li>
+                            <li>3D Printed/Custom Jhumka Casing</li>
+                            <li>Connecting Wires</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="dropdown-container">
+                    <button class="dropdown-button">Estimated Budget</button>
+                    <div class="dropdown-content">
+                        <p>Our prototype was developed with affordability in mind to ensure accessibility.</p>
+                        <p><strong>Total Estimated Cost:</strong> Approximately ₹1500 - ₹2000 per unit.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <script>
-        // --- Your Firebase Configuration ---
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyDJG7XujjzGVGrdiDzYjPgdw34mFw6mkIA",
-            authDomain: "alert-system-a99ab.firebaseapp.com",
-            databaseURL: "https://alert-system-a99ab-default-rtdb.firebaseio.com",
-            projectId: "alert-system-a99ab",
-            storageBucket: "alert-system-a99ab.firebasestorage.app",
-            messagingSenderId: "301074962948",
-            appId: "1:301074962948:web:a32821f6312145e1627351",
-            measurementId: "G-0C5EPXJGED"
-        };
-        // ------------------------------------
-        
-        // Initialize Firebase
-        const app = firebase.initializeApp(FIREBASE_CONFIG);
-        const db = firebase.database();
-        const baseRef = db.ref('sos_reports');
-
-        // Get references to UI elements
-        const statusEl = document.getElementById('status');
-        const sosButton = document.getElementById('sosButton');
-        const stopBtn = document.getElementById('stopBtn');
-
-        // State variables
-        let reportKey = null;
-        let watchId = null;
-
-        function setStatus(msg, cls){ statusEl.textContent = msg; statusEl.className = 'status ' + (cls||''); }
-
-        function startSOS() {
-            setStatus('Requesting location...', '');
-            sosButton.disabled = true;
-
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const initial = { createdAt: new Date().toISOString(), location: { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy } };
-                try {
-                    const ref = baseRef.push();
-                    await ref.set(initial);
-                    reportKey = ref.key;
-                    setStatus('SOS Active. Sharing location.', 'ok');
-                    sosButton.classList.add('active');
-                    sosButton.innerHTML = 'ACTIVE';
-                    stopBtn.style.display = 'inline-block';
-                    startWatch();
-                } catch(e) { 
-                    setStatus('Could not send SOS. Check connection.', 'err'); 
-                    sosButton.disabled = false;
-                }
-            }, (err) => {
-                let msg = 'Could not get location.'; 
-                if (err.code === 1) msg = 'Location permission denied.'; 
-                setStatus(msg, 'err'); 
-                sosButton.disabled = false;
-            }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
-        }
-        
-        function startWatch() {
-            watchId = navigator.geolocation.watchPosition(pos => {
-                if (!reportKey) return;
-                baseRef.child(reportKey).update({ 
-                    location: { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }, 
-                    updatedAt: new Date().toISOString() 
+        // JavaScript for the dropdown functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdownButtons = document.querySelectorAll('.dropdown-button');
+            dropdownButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Close other open dropdowns
+                    dropdownButtons.forEach(otherButton => {
+                        if (otherButton !== button) {
+                            otherButton.nextElementSibling.classList.remove('show');
+                        }
+                    });
+                    // Toggle the clicked one
+                    const content = button.nextElementSibling;
+                    content.classList.toggle('show');
                 });
-            }, null, { enableHighAccuracy: true });
-        }
-        
-        function stopSOS() {
-            if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-            watchId = null; 
-            reportKey = null;
-            setStatus('SOS stopped. Location is no longer shared.');
-            sosButton.disabled = false;
-            sosButton.classList.remove('active');
-            sosButton.innerHTML = 'SOS';
-            stopBtn.style.display = 'none';
-        }
-
-        sosButton.addEventListener('click', () => { if (!reportKey) startSOS(); });
-        stopBtn.addEventListener('click', stopSOS);
+            });
+        });
     </script>
 </body>
 </html>
